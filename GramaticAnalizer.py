@@ -121,17 +121,26 @@ class GramaticAnalizer:
 
     elif fun == "contarsi":
       if len(parameters) == 2:
-        indice = self.db.obtener_claves().index(parameters[0])
+        if len(self.db.obtener_registros()) > 0:
+          if parameters[0] in self.db.obtener_claves():
+            indice = self.db.obtener_claves().index(parameters[0])
 
-        valor_a_contar = parameters[1]
+            if type(self.db.obtener_registros()[0][indice]) == int or type(self.db.obtener_registros()[0][indice]) == float:
+              valor_a_contar = parameters[1]
+              contador = 0
 
-        contador = 0
+              for tupla in self.db.obtener_registros():
+                  if tupla[indice] == valor_a_contar:
+                      contador += 1
 
-        for tupla in self.db.obtener_registros():
-            if tupla[indice] == valor_a_contar:
-                contador += 1
-
-        mensajes.append("Ejecutando contarsi(): " + str(contador))
+              mensajes.append("Ejecutando contarsi(): " + str(contador))
+            else:
+              errores.append(f"contarsi(): La columna {parameters[0]} es de tipo {type(self.db.obtener_registros()[0][indice])}. Es decir, no es de un tipo contable.")
+              
+          else:
+            errores.append(f"contarsi(): La columna {parameters[0]} no existe en las Claves proporcionadas")
+        else:
+          errores.append(f"contarsi(): No hay datos en Registros. Agrega primero datos")
       else:
         errores.append(f"contarsi(): Se esperaban 2 parámetros, se recibieron {len(parameters)}")
 
@@ -152,21 +161,39 @@ class GramaticAnalizer:
 
     elif fun == "max":
       if len(parameters) == 1:
-        indice = self.db.obtener_registros().index(parameters[0])
+        if len(self.db.obtener_registros()) > 0:
+          if parameters[0] in self.db.obtener_claves():
+            indice = self.db.obtener_claves().index(parameters[0])
 
-        max_val = max(tupla[indice] for tupla in self.db.obtener_registros())
+            if type(self.db.obtener_registros()[0][indice]) == int or type(self.db.obtener_registros()[0][indice]) == float:
+              max_val = max(tupla[indice] for tupla in self.db.obtener_registros())
 
-        mensajes.append("Ejecutando max(): " + max_val)
+              mensajes.append("Ejecutando max(): " + str(max_val))
+            else:
+             errores.append(f"max(): La columna {parameters[0]} es de tipo {type(self.db.obtener_registros()[0][indice])}. Es decir, no es de un tipo contable.")
+          else:
+            errores.append(f"max(): La columna {parameters[0]} no existe en las Claves proporcionadas")
+        else:
+          errores.append(f"max(): No hay datos en Registros. Agrega primero datos")
       else:
         errores.append(f"max(): Se esperaban 1 parámetros, se recibieron {len(parameters)}")
 
     elif fun == "min":
       if len(parameters) == 1:
-        indice = self.db.obtener_registros().index(parameters[0])
+        if len(self.db.obtener_registros()) > 0:
+          if parameters[0] in self.db.obtener_claves():
+            indice = self.db.obtener_claves().index(parameters[0])
 
-        min_val = min(tupla[indice] for tupla in self.db.obtener_registros())
+            if type(self.db.obtener_registros()[0][indice]) == int or type(self.db.obtener_registros()[0][indice]) == float:
+              min_val = min(tupla[indice] for tupla in self.db.obtener_registros())
 
-        mensajes.append("Ejecutando min(): " + min_val)
+              mensajes.append("Ejecutando min(): " + str(min_val))
+            else:
+             errores.append(f"min(): La columna {parameters[0]} es de tipo {type(self.db.obtener_registros()[0][indice])}. Es decir, no es de un tipo contable.")
+          else:
+            errores.append(f"min(): La columna {parameters[0]} no existe en las Claves proporcionadas")
+        else:
+          errores.append(f"min(): No hay datos en Registros. Agrega primero datos")
       else:
         errores.append(f"min(): Se esperaban 1 parámetros, se recibieron {len(parameters)}")
 
@@ -184,14 +211,23 @@ class GramaticAnalizer:
 
     elif fun == "promedio":
       if len(parameters) == 1:
-        indice = self.db.obtener_claves().index(parameters[0])
+        if len(self.db.obtener_registros()) > 0:
+          if parameters[0] in self.db.obtener_claves():
+            indice = self.db.obtener_claves().index(parameters[0])
 
-        valores_en_indice = [tupla[indice] for tupla in self.db.obtener_registros()]
+            if type(self.db.obtener_registros()[0][indice]) == int or type(self.db.obtener_registros()[0][indice]) == float:
+              valores_en_indice = [tupla[indice] for tupla in self.db.obtener_registros()]
 
-        suma = sum(valores_en_indice)
+              suma = sum(valores_en_indice)
 
-        promedio = suma / len(valores_en_indice)
-        mensajes.append("Ejecutando promedio(): " + str(promedio))
+              promedio = suma / len(valores_en_indice)
+              mensajes.append("Ejecutando promedio(): " + str(promedio))
+            else:
+             errores.append(f"contarsi(): La columna {parameters[0]} es de tipo {type(self.db.obtener_registros()[0][indice])}. Es decir, no es de un tipo contable.")
+          else:
+            errores.append(f"promedio(): La columna {parameters[0]} no existe en las Claves proporcionadas")
+        else:
+          errores.append(f"contarsi(): No hay datos en Registros. Agrega primero datos")
       else:
         errores.append(f"promedio(): Se esperaban 1 parámetros, se recibieron {len(parameters)}")
 
@@ -203,14 +239,23 @@ class GramaticAnalizer:
 
     elif fun == "sumar":
       if len(parameters) == 1:
-        indice = self.db.obtener_claves().index(parameters[0])
+        if len(self.db.obtener_registros()) > 0:
+          if parameters[0] in self.db.obtener_claves():
+            indice = self.db.obtener_claves().index(parameters[0])
 
-        valores_en_indice = [tupla[indice] for tupla in self.db.obtener_registros()]
+            if type(self.db.obtener_registros()[0][indice]) == int or type(self.db.obtener_registros()[0][indice]) == float:
+              valores_en_indice = [tupla[indice] for tupla in self.db.obtener_registros()]
 
-        suma = sum(valores_en_indice)
-        mensajes.append("Ejecutando sumar(): " + str(suma))
+              suma = sum(valores_en_indice)
+              mensajes.append("Ejecutando sumar(): " + str(suma))
+            else:
+             errores.append(f"contarsi(): La columna {parameters[0]} es de tipo {type(self.db.obtener_registros()[0][indice])}. Es decir, no es de un tipo contable.")
+          else:
+            errores.append(f"promedio(): La columna {parameters[0]} no existe en las Claves proporcionadas")
+        else:
+          errores.append(f"contarsi(): No hay datos en Registros. Agrega primero datos")
       else:
-        errores.append(f"sumar(): Se esperaban 1 parámetros, se recibieron {len(parameters)}")
+        errores.append(f"promedio(): Se esperaban 1 parámetros, se recibieron {len(parameters)}")
 
     elif fun == "reset":
       if len(parameters) == 0:

@@ -50,7 +50,6 @@ class ADFAnalizer:
 
         elif self.node == 1:
           print("NODE 1")
-          print(val_1)
           if val_1 == " ":
             res = self.check_case_1(self.acum_case)
 
