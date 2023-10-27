@@ -205,7 +205,7 @@ class GramaticAnalizer:
 
     elif fun == "imprimirln":
       if len(parameters) == 1:
-        mensajes.append("Ejecutando imprimirln(): " + parameters[0])
+        mensajes.append("Ejecutando imprimirln(): " + parameters[0] + "\n")
       else:
         errores.append(f"imprimirln(): Se esperaban 1 parámetros, se recibieron {len(parameters)}")
 
@@ -223,11 +223,11 @@ class GramaticAnalizer:
               promedio = suma / len(valores_en_indice)
               mensajes.append("Ejecutando promedio(): " + str(promedio))
             else:
-             errores.append(f"contarsi(): La columna {parameters[0]} es de tipo {type(self.db.obtener_registros()[0][indice])}. Es decir, no es de un tipo contable.")
+             errores.append(f"promedio(): La columna {parameters[0]} es de tipo {type(self.db.obtener_registros()[0][indice])}. Es decir, no es de un tipo contable.")
           else:
             errores.append(f"promedio(): La columna {parameters[0]} no existe en las Claves proporcionadas")
         else:
-          errores.append(f"contarsi(): No hay datos en Registros. Agrega primero datos")
+          errores.append(f"promedio(): No hay datos en Registros. Agrega primero datos")
       else:
         errores.append(f"promedio(): Se esperaban 1 parámetros, se recibieron {len(parameters)}")
 
@@ -249,13 +249,13 @@ class GramaticAnalizer:
               suma = sum(valores_en_indice)
               mensajes.append("Ejecutando sumar(): " + str(suma))
             else:
-             errores.append(f"contarsi(): La columna {parameters[0]} es de tipo {type(self.db.obtener_registros()[0][indice])}. Es decir, no es de un tipo contable.")
+             errores.append(f"sumar(): La columna {parameters[0]} es de tipo {type(self.db.obtener_registros()[0][indice])}. Es decir, no es de un tipo contable.")
           else:
-            errores.append(f"promedio(): La columna {parameters[0]} no existe en las Claves proporcionadas")
+            errores.append(f"sumar(): La columna {parameters[0]} no existe en las Claves proporcionadas")
         else:
-          errores.append(f"contarsi(): No hay datos en Registros. Agrega primero datos")
+          errores.append(f"sumar(): No hay datos en Registros. Agrega primero datos")
       else:
-        errores.append(f"promedio(): Se esperaban 1 parámetros, se recibieron {len(parameters)}")
+        errores.append(f"sumar(): Se esperaban 1 parámetros, se recibieron {len(parameters)}")
 
     elif fun == "reset":
       if len(parameters) == 0:

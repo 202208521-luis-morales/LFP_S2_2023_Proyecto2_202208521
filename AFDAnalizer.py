@@ -55,14 +55,14 @@ class ADFAnalizer:
 
             if res:
               self.current_case = res
-              self.logs.append(f"Leyendo: '{res}'\n")
+              self.logs.append(f"Leyendo: '{res}'; fila {row_count}, columna {indx_1} \n")
               self.node = 2
           elif val_1 == "(":
             res = self.check_case_2(self.acum_case)
             
             if res:
               self.current_case = res
-              self.logs.append(f"Leyendo: '{res}'\n")
+              self.logs.append(f"Leyendo: '{res}'; fila {row_count}, columna {indx_1} \n")
               self.node = 15
           elif self.alpha_numerical_check(val_1):
             self.acum_case += val_1
