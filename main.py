@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import scrolledtext
+from tkinter import messagebox
 from tkinter import filedialog
-
 from AFDAnalizer import ADFAnalizer
+from DB import DB
 
 texto_prueba_1 = """
 Claves = ["codigo", "producto", "precio_compra", "precio_venta", "stock"]
@@ -47,6 +48,7 @@ class ViewMethod:
   def __init__(self) -> None:
     self.ventana = tk.Tk()
     self.ventana.title("Proyecto 2 - 202208521")
+    self.db = DB()
 
     self.titulo = tk.Label(self.ventana, text="Proyecto 2 - 202208521", padx=10)
     self.boton1 = tk.Button(self.ventana, text="Abrir", command=self.boton1_clicado)
@@ -81,7 +83,50 @@ class ViewMethod:
     self.prompt_text(">>> EJECUCIÓN FINALIZADA\n\n")
 
   def boton3_clicado(self):
-    print("Botón 3 clicado!")
+    if len(self.db.obtener_errores()) > 0:
+      contenido_html = f"""
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <link
+              href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+              rel="stylesheet"
+              integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+              crossorigin="anonymous"
+            />
+            <script
+              src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+              integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+              crossorigin="anonymous"
+            ></script>
+            <title>Reporte</title>
+          </head>
+          <body>
+            <div class="container my-5">
+              <h1>Reporte Errores</h1>
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Errores</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {"".join(f"<tr><td>{err}</td><tr>" for err in self.db.obtener_errores())}
+                </tbody>
+              </table>
+            </div>
+          </body>
+        </html>
+        """
+      
+      messagebox.showinfo("Reporte generado", "El reporte ha sido generado con éxito")
+      with open("reporte_errores.html", "w", encoding="utf-8") as archivo_html:
+        archivo_html.write(contenido_html)
+
+    else:
+      messagebox.showerror("Error", "No existen hasta ahora errores generados. Genera errores y luego intenta nuevamente generar el Reporte")
 
   def prompt_text(self, text_to_prompt):
     self.texto_no_editable.config(state=tk.NORMAL)

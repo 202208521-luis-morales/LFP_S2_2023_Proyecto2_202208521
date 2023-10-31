@@ -15,7 +15,10 @@ La aplicación cuenta con una interfaz gráfica que posee las siguientes caracte
    pueda visualizar y modificar el código “bizdata”.  
  - **Analizar archivo:** Un botón que analice el código “bizdata”.  
  - **Consola:** Un área de texto que no se pueda editar, solamente visualizar texto generado por las instrucciones dadas por el lenguaje.  
- -  **Reportes:** Un menú que pueda generar los siguientes reportes: ○ Reporte de Tokens ○ Reporte de Errores ○ Árbol de derivación
+ -  **Reportes:** Un menú que pueda generar los siguientes reportes: 
+	 - Reporte de Tokens 
+	 - Reporte de Errores 
+	 - Árbol de derivación
 
 ## Tipos de datos
 ### Listas de datos

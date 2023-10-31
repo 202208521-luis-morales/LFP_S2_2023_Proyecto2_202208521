@@ -1,3 +1,4 @@
+from DB import DB
 from GramaticAnalizer import GramaticAnalizer
 from Stack import Stack
 
@@ -5,6 +6,7 @@ class ADFAnalizer:
   def __init__(self, text_to_analize) -> None:
     self.there_is_an_error = False
     self.text_to_analize = text_to_analize
+    self.db = DB()
     self.acum_case = ""
     self.acum_stack = Stack()
     self.current_case = ""
@@ -50,15 +52,15 @@ class ADFAnalizer:
 
         elif self.node == 1:
           print("NODE 1")
-          if val_1 == " ":
-            res = self.check_case_1(self.acum_case)
+          if val_1 == " " or val_1 == "\n":
+            res = self.check_case_1(val=self.acum_case, row_count=row_count, indx_1=indx_1)
 
             if res:
               self.current_case = res
               self.logs.append(f"Leyendo: '{res}'; fila {row_count}, columna {indx_1} \n")
               self.node = 2
           elif val_1 == "(":
-            res = self.check_case_2(self.acum_case)
+            res = self.check_case_2(val=self.acum_case, row_count=row_count, indx_1=indx_1)
             
             if res:
               self.current_case = res
@@ -227,11 +229,6 @@ class ADFAnalizer:
             self.node = 20
           else:
             self.node_21(val_1, row_count, indx_1)
-            """
-            self.acum_temp += ""
-            self.case_2_params.append(val_1)
-            self.node = 20
-            """
             
 
         elif self.node == 20:
@@ -408,17 +405,17 @@ class ADFAnalizer:
     else:
       self.set_error(f"Caracter inválido: {val_1}; fila {row_count}, columna {indx_1}")
 
-  def check_case_1(self, val, set_er = True):
+  def check_case_1(self, val, set_er = True, row_count = None, indx_1 = None):
     if val == "Claves":
       return "Claves"
     elif val == "Registros":
       return "Registros"
     else:
       if set_er:
-        self.set_error(f"{val} no es un comando conocido")
+        self.set_error(f"{val} no es un comando conocido; fila {int(row_count-1)}, columna {indx_1}")
       return None
     
-  def check_case_2(self, val, set_er = True):
+  def check_case_2(self, val, set_er = True, row_count = None, indx_1 = None):
     if val == "imprimir":
       return "imprimir"
     elif val == "imprimirln":
@@ -443,7 +440,7 @@ class ADFAnalizer:
       return "reset"
     else:
       if set_er:
-        self.set_error(f"{val} no es una función conocida")
+        self.set_error(f"{val} no es una función conocida; fila {int(row_count-1)}, columna {indx_1}")
       return None
     
   def set_error(self, error_to_save: str):
@@ -451,6 +448,7 @@ class ADFAnalizer:
       self.reset_class_data()
       self.logs.append("> ERROR: " + error_to_save + "\n")
       self.errors.append("> ERROR: " + error_to_save)
+      self.db.agregar_error("> ERROR: " + error_to_save)
 
   def alpha_numerical_check(self, val_2):
     if val_2 in self.alf_L or val_2 in self.alf_D or val_2 == "_":

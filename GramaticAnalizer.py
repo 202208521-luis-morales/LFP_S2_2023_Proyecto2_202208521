@@ -233,7 +233,49 @@ class GramaticAnalizer:
 
     elif fun == "exportarReporte":
       if len(parameters) == 1:
-        pass
+        if len(self.db.obtener_registros()) > 0:
+          contenido_html = f"""
+            <!DOCTYPE html>
+            <html lang="en">
+              <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <link
+                  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+                  rel="stylesheet"
+                  integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+                  crossorigin="anonymous"
+                />
+                <script
+                  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+                  integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+                  crossorigin="anonymous"
+                ></script>
+                <title>Reporte</title>
+              </head>
+              <body>
+                <div class="container my-5">
+                  <h1>{parameters[0]}</h1>
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        {"".join(f"<th>{encabezado}</th>" for encabezado in self.db.obtener_claves())}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {"".join(f"<tr>{''.join(f'<td>{str(dato)}</td>' for dato in fila)}</tr>" for fila in self.db.obtener_registros())}
+                    </tbody>
+                  </table>
+                </div>
+              </body>
+            </html>
+            """
+          
+          with open("reporte.html", "w", encoding="utf-8") as archivo_html:
+            archivo_html.write(contenido_html)
+          mensajes.append("Reporte creado con éxito")
+        else:
+          errores.append(f"exportarReporte(): No hay datos en Registros. Agrega primero datos")
       else:
         errores.append(f"exportarReporte(): Se esperaban 1 parámetros, se recibieron {len(parameters)}")
 

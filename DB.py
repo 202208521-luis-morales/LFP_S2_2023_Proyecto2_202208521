@@ -10,6 +10,7 @@ class DB:
     def inicializar(self):
         self.claves = []
         self.registros = []
+        self.errores = []
 
     def agregar_clave(self, clave):
         self.claves.append(clave)
@@ -28,6 +29,12 @@ class DB:
 
     def obtener_registros(self):
         return self.registros
+
+    def agregar_error(self, error):
+        self.errores.append(error)
+
+    def obtener_errores(self):
+        return self.errores
 
     def reset(self):
         self.inicializar()
