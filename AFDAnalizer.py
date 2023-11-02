@@ -16,6 +16,7 @@ class ADFAnalizer:
     self.case_2_params = []
     self.errors = []
     self.logs = []
+    self.current_val = None
     self.alf_L = (
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
       'N', 'Ñ', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
@@ -27,10 +28,14 @@ class ADFAnalizer:
 
   def analize(self):
     row_count = 1
+    indx_1 = 1
 
-    for indx_1, val_1 in enumerate(self.text_to_analize):
+    for val_1 in self.text_to_analize:
+      self.current_val = val_1
+
       if val_1 == "\n":
         row_count += 1
+        indx_1 = 1
 
         if self.there_is_an_error == True:
           self.there_is_an_error = False
@@ -47,12 +52,12 @@ class ADFAnalizer:
             self.acum_stack.push(val_1)
             self.node = 31
           else:
-            if val_1 != " " and val_1 != "\n":
+            if val_1 != " " and val_1 != "\n" and val_1 != "\t":
               self.set_error(f"El caracter {val_1} no es válido; fila {row_count}, columna {indx_1}")
 
         elif self.node == 1:
           print("NODE 1")
-          if val_1 == " " or val_1 == "\n":
+          if val_1 == " " or val_1 == "\n" or val_1 == "\t":
             res = self.check_case_1(val=self.acum_case, row_count=row_count, indx_1=indx_1)
 
             if res:
@@ -75,12 +80,12 @@ class ADFAnalizer:
           print("NODE 2")
           if val_1 == "=":
             self.node = 3
-          elif val_1 != " ":
+          elif val_1 != " " and val_1 != "\t":
             self.set_error(f"Se espera únicamente el caracter '='; fila {row_count}, columna {indx_1}")
 
         elif self.node == 3:
           print("NODE 3")
-          if val_1 == " ":
+          if val_1 == " " or val_1 != "\t":
             self.node = 4
           else:
             self.set_error(f"Debe ir por lo menos un espacio entre '=' y el valor siguiente; fila {row_count}, columna {indx_1}")
@@ -90,12 +95,14 @@ class ADFAnalizer:
           if val_1 == "[":
             self.case_1_list += "["
             self.node = 5
-          elif val_1 != " ":
+          elif val_1 != " " and val_1 != "\t":
             self.set_error(f"Se espera únicamente el caracter '['; fila {row_count}, columna {indx_1}")
 
         elif self.node == 5:
           print("NODE 5")
-          if val_1 == "{":
+          if val_1 == "#":
+            self.node = 35
+          elif val_1 == "{":
             self.case_1_list += "{"
             self.node = 6
           elif val_1 == "]":
@@ -105,7 +112,7 @@ class ADFAnalizer:
             self.case_1_list += val_1
             self.acum_stack.push(val_1)
             self.node = 28
-          elif val_1 != " " and val_1 != "\n":
+          elif val_1 != " " and val_1 != "\n" and val_1 != "\t":
             a = "{"
             self.set_error(f"Se espera únicamente un str o un objeto que empiece con '{a}'. Caracter inválido: {val_1}; fila {row_count}, columna {indx_1}")
             pass
@@ -122,24 +129,25 @@ class ADFAnalizer:
             self.case_1_list += '"'
             self.acum_stack.push(val_1)
             self.node = 7
-          elif val_1 != " " and val_1 != "\n":
+          elif val_1 != " " and val_1 != "\n" and val_1 != "\t":
             self.set_error(f"Se espera únicamente un str o un número. Caracter inválido: {val_1}; fila {row_count}, columna {indx_1}")
 
         elif self.node == 7:
           print("NODE 7")
-          if self.alpha_numerical_check(val_1) or val_1 == " ":
-            self.case_1_list += val_1
-          else: 
-            if val_1 == "'" or val_1 == '"':
-              popped_value = self.acum_stack.pop()
+          # self.set_error(f"No se puede hacer un salto de fila al hacer un str; fila {row_count}, columna {indx_1}")
+          if val_1 == "'" or val_1 == '"':
+            popped_value = self.acum_stack.pop()
 
-              if val_1 == popped_value:
-                self.case_1_list += '"'
-                self.node = 12
-              else:
-                self.set_error(f"El caracter de inicio de str que usaste al principio: {popped_value} no concuerda con el final: {val_1}; fila {row_count}, columna {indx_1}")
+            if val_1 == popped_value:
+              self.case_1_list += val_1
+              self.node = 12
             else:
-              self.set_error(f"Caracter inválido: {val_1}; fila {row_count}, columna {indx_1}")
+              self.set_error(f"El caracter de inicio de str que usaste al principio: {popped_value} no concuerda con el final: {val_1}; fila {row_count}, columna {indx_1}")
+          else:
+            if val_1 == "\n":
+              self.set_error(f"No se puede hacer un salto de fila al hacer un str; fila {row_count}, columna {indx_1}")
+            else:
+              self.case_1_list += val_1
 
         elif self.node == 9:
           print("NODE 9")
@@ -166,20 +174,18 @@ class ADFAnalizer:
         elif self.node == 13:
           print("NODE 13")
 
-          print(val_1)
-          print(val_1 == "]")
           if val_1 == ",":
             self.case_1_list += ","
             self.node = 5
           elif val_1 == "]":
             self.case_1_list += "]"
             self.node = 14
-          elif val_1 != " " and val_1 != "\n":
+          elif val_1 != " " and val_1 != "\n" and val_1 != "\t":
             self.set_error(f"Se espera únicamente un cierre de lista ']' o una coma ','. Caracter inválido: {val_1}; fila {row_count}, columna {indx_1}")
 
         elif self.node == 14:
           print("NODE 14")
-          if val_1 != " ":
+          if val_1 != " " and val_1 != "\t":
             self.node_27(val_1, row_count, indx_1)
 
         elif self.node == 15:
@@ -187,14 +193,12 @@ class ADFAnalizer:
           if val_1 == '"' or val_1 == "'":
             self.acum_stack.push(val_1)
             self.node = 16
-          elif val_1 != " ":
+          elif val_1 != " " and val_1 != "\t":
             self.node_21(val_1, row_count, indx_1)
 
         elif self.node == 16:
           print("NODE 16")
-          if self.alpha_numerical_check(val_1) or val_1 == " ":
-            self.acum_temp += val_1
-          elif val_1 == "'" or val_1 == '"':
+          if val_1 == "'" or val_1 == '"':
             popped_value = self.acum_stack.pop()
 
             if val_1 == popped_value:
@@ -204,13 +208,16 @@ class ADFAnalizer:
             else:
               self.set_error(f"La apertura del str {popped_value} no concuerda con el cierre {val_1}: Caracter inválido: {val_1}; fila {row_count}, columna {indx_1}")
           else:
-              self.set_error(f"Caracter inválido: {val_1}; fila {row_count}, columna {indx_1}")
+            if val_1 == "\n":
+              self.set_error(f"No se puede hacer un salto de fila al hacer un str; fila {row_count}, columna {indx_1}")
+            else:
+              self.acum_temp += val_1
 
         elif self.node == 17:
           print("NODE 17")
           if val_1 == ",":
             self.node = 18
-          elif val_1 != " ":
+          elif val_1 != " " and val_1 != "\t":
             self.node_21(val_1, row_count, indx_1)
 
         elif self.node == 18:
@@ -218,14 +225,14 @@ class ADFAnalizer:
           if val_1 in self.alf_D:
             self.acum_temp += val_1
             self.node = 19
-          elif val_1 != " ":
+          elif val_1 != " " and val_1 != "\t":
             self.set_error(f"Caracter inválido: {val_1}; fila {row_count}, columna {indx_1}")
 
         elif self.node == 19:
           print("NODE 19")
           if val_1 in self.alf_D:
             self.acum_temp += val_1
-          elif val_1 == " ":
+          elif val_1 == " " or val_1 == "\t":
             self.node = 20
           else:
             self.node_21(val_1, row_count, indx_1)
@@ -233,7 +240,7 @@ class ADFAnalizer:
 
         elif self.node == 20:
           print("NODE 20")
-          if val_1 != " ":
+          if val_1 != " " and val_1 != "\t":
             self.node_21(val_1, row_count, indx_1)
 
         # node21 es un método
@@ -245,16 +252,17 @@ class ADFAnalizer:
             self.node = 23
           elif val_1 == "\n":
             self.set_error(f"Toda función debe de terminar con punto y coma: ';' ; fila {row_count}, columna {indx_1}")
-          elif val_1 != " ":
+          elif val_1 != " " and val_1 != "\t":
             self.set_error(f"Caracter inválido: {val_1}. Si quieres empezar otra instrucción brinca a otra fila; fila {row_count}, columna {indx_1}")
         
         elif self.node == 23:
           print("NODE 23")
-          if val_1 != " ":
+          if val_1 != " " and val_1 != "\t":
             self.node_27(val_1, row_count, indx_1)
 
         elif self.node == 24:
-          if not self.alpha_numerical_check(val_1) and val_1 != " ":
+          print("NODE 24")
+          if val_1 == "\n":
             self.node_27(val_1, row_count, indx_1)
 
         elif self.node == 25:
@@ -265,31 +273,28 @@ class ADFAnalizer:
               self.node = 33
             else:
               self.set_error(f"Comillas de comentarios multilínea deben concordar. Comilla anterior: {peeked_value}, Comilla del error: {val_1}; Caracter inválido: {val_1}; fila {row_count}, columna {indx_1}")
-          else:
-            if not self.alpha_numerical_check(val_1) and val_1 != " " and val_1 != "\n":
-              self.set_error(f"Caracter inválido: {val_1}; fila {row_count}, columna {indx_1}")
 
         elif self.node == 26:
           print("NODE 26")
-          if val_1 != " ":
+          if val_1 != " " and val_1 != "\t":
             self.node_27(val_1, row_count, indx_1)
 
         # node27 es un método
 
         elif self.node == 28:
           print("NODE 28")
-          if self.alpha_numerical_check(val_1):
-            self.case_1_list += val_1
-          else:
-            if val_1 == "'" or val_1 == '"':
-              popped_value = self.acum_stack.pop()
-              if val_1 == popped_value:
-                self.case_1_list += val_1
-                self.node = 13
-              else:
-                self.set_error(f"El caracter de inicio de str que usaste al principio: {popped_value} no concuerda con el final: {val_1}; fila {row_count}, columna {indx_1}")
+          if val_1 == "'" or val_1 == '"':
+            popped_value = self.acum_stack.pop()
+            if val_1 == popped_value:
+              self.case_1_list += val_1
+              self.node = 13
             else:
-              self.set_error(f"Caracter inválido: {val_1}; fila {row_count}, columna {indx_1}")
+              self.set_error(f"El caracter de inicio de str que usaste al principio: {popped_value} no concuerda con el final: {val_1}; fila {row_count}, columna {indx_1}")
+          else:
+            if val_1 == "\n":
+              self.set_error(f"No se puede hacer un salto de fila al hacer un str; fila {row_count}, columna {indx_1}")
+            else:
+              self.case_1_list += val_1
 
         elif self.node == 30:
           print("NODE 30")
@@ -347,7 +352,12 @@ class ADFAnalizer:
           else:
             self.set_error(f"Caracter inválido: {val_1}; fila {row_count}, columna {indx_1}")
 
+        elif self.node == 35:
+          print("NODE 35")
+          if val_1 == "\n":
+            self.node = 5
 
+      indx_1 += 1
     return self.logs
 
   def node_12(self, val_1, row_count, indx_1):
@@ -360,7 +370,7 @@ class ADFAnalizer:
     elif val_1 == "}":
       self.case_1_list += "}"
       self.node = 13
-    elif val_1 != " ":
+    elif val_1 != " " and val_1 != "\n" and val_1 != "\t":
       a = "}"
       self.set_error(f"Se espera únicamente el cierre del objeto '{a}'. Caracter inválido: {val_1}; fila {row_count}, columna {indx_1}")
 
@@ -445,6 +455,10 @@ class ADFAnalizer:
     
   def set_error(self, error_to_save: str):
       self.there_is_an_error = True
+
+      if self.current_val == "\n" and self.there_is_an_error == True:
+        self.there_is_an_error = False
+          
       self.reset_class_data()
       self.logs.append("> ERROR: " + error_to_save + "\n")
       self.errors.append("> ERROR: " + error_to_save)

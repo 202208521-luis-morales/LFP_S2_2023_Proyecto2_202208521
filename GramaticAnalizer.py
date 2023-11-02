@@ -130,7 +130,7 @@ class GramaticAnalizer:
               contador = 0
 
               for tupla in self.db.obtener_registros():
-                  if tupla[indice] == valor_a_contar:
+                  if int(tupla[indice]) == int(valor_a_contar):
                       contador += 1
 
               mensajes.append("Ejecutando contarsi(): " + str(contador))
