@@ -6,7 +6,7 @@ digraph G {
     
     /*
     ε: nothing
-    λ: space
+    λ: space or tab
     μ: jump
     */
     
@@ -24,9 +24,12 @@ digraph G {
     q5 -> q6 [label="{"]
     
     q5 -> q14 [label="]"]
+    q5 -> q35 [label="#"]
+    q35 -> q35 [label="N\nλ"]
+    q35 -> q5 [label="μ"]
     
     q5 -> q28 [label="''"]
-    q28 -> q28 [label="L\nD\n_\nλ"]
+    q28 -> q28 [label="N\nλ"]
     q28 -> q13 [label="''"]
     
     
@@ -40,7 +43,7 @@ digraph G {
     
     // INICIO $entradaString
     q6 -> q7 [label="''"]
-    q7 -> q7 [label="L\nD\n_\nλ"]
+    q7 -> q7 [label="N\nλ"]
     q7 -> q12 [label="''"]
     // FIN $entradaString
     
@@ -51,7 +54,7 @@ digraph G {
     q30 -> q30 [label="D"]
     q30 -> q12 [label="ε"]
     
-    q12 -> q12 [label="λ"]
+    q12 -> q12 [label="λ\nμ"]
     q12 -> q13 [label="}"]
     q13 -> q13 [label="λ\nμ"]
     
@@ -66,7 +69,7 @@ digraph G {
     
     // INICIO $entradaString
     q15 -> q16 [label="''"]
-    q16 -> q16 [label="L\nD\n_\nλ"]
+    q16 -> q16 [label="N\nλ"]
     q16 -> q17 [label="''"]
     // FIN $entradaString
     
@@ -87,12 +90,12 @@ digraph G {
     q23 -> q23 [label="λ"]
     
     q0 -> q24 [label="#"]
-    q24 -> q24 [label="L\nD\n_\nλ"]
+    q24 -> q24 [label="N\nλ"]
     
     q0 -> q31 [label="'"]
     q31 -> q32 [label="'"]
     q32 -> q25 [label="'"]
-    q25 -> q25 [label="L\nD\n_\nλ\nμ"]
+    q25 -> q25 [label="N\nλ\nμ"]
     q25 -> q33 [label="'"]
     q33 -> q34 [label="'"]
     q34 -> q26 [label="'"]
